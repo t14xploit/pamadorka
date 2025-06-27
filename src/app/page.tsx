@@ -1,17 +1,38 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { PomodoroDock, PomodoroMode } from "@/components/pomodoro-dock";
 import { AREffects } from "@/components/ar-effects";
 import { PomodoroTimer } from "@/components/pomodoro-timer";
 
+interface Particle {
+  id: number;
+  left: number;
+  top: number;
+  animationDelay: number;
+  animationDuration: number;
+}
+
 export default function Home() {
   const [currentMode, setCurrentMode] = useState<PomodoroMode>("studying");
+  const [particles, setParticles] = useState<Particle[]>([]);
 
   const handleModeChange = (mode: PomodoroMode) => {
     setCurrentMode(mode);
     console.log("Mode changed to:", mode);
   };
+
+  // Generate particles on client side only
+  useEffect(() => {
+    const generatedParticles: Particle[] = Array.from({ length: 20 }, (_, i) => ({
+      id: i,
+      left: Math.random() * 100,
+      top: Math.random() * 100,
+      animationDelay: Math.random() * 3,
+      animationDuration: 2 + Math.random() * 3,
+    }));
+    setParticles(generatedParticles);
+  }, []);
 
   const getModeContent = () => {
     switch (currentMode) {
@@ -151,15 +172,15 @@ export default function Home() {
 
       {/* Floating Particles */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(20)].map((_, i) => (
+        {particles.map((particle) => (
           <div
-            key={i}
+            key={particle.id}
             className="absolute w-1 h-1 bg-cyan-400 rounded-full opacity-60 animate-pulse"
             style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 3}s`,
-              animationDuration: `${2 + Math.random() * 3}s`
+              left: `${particle.left}%`,
+              top: `${particle.top}%`,
+              animationDelay: `${particle.animationDelay}s`,
+              animationDuration: `${particle.animationDuration}s`
             }}
           ></div>
         ))}

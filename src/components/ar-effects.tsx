@@ -1,9 +1,11 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { BackgroundMusic } from "./background-music";
 
 export function AREffects() {
   const [dataStreams, setDataStreams] = useState<Array<{ id: number; delay: number; duration: number }>>([]);
+  const [currentTime, setCurrentTime] = useState<string>("");
 
   useEffect(() => {
     // Generate random data streams
@@ -13,6 +15,19 @@ export function AREffects() {
       duration: 3 + Math.random() * 2,
     }));
     setDataStreams(streams);
+
+    // Update time every second
+    const updateTime = () => {
+      setCurrentTime(new Date().toLocaleTimeString());
+    };
+
+    // Set initial time
+    updateTime();
+
+    // Update every second
+    const timeInterval = setInterval(updateTime, 1000);
+
+    return () => clearInterval(timeInterval);
   }, []);
 
   return (
@@ -97,31 +112,16 @@ export function AREffects() {
 
       <div className="fixed top-4 right-4 z-10 pointer-events-none">
         <div className="text-cyan-400/60 font-mono text-xs text-right space-y-1">
-          <div>TIMESTAMP: {new Date().toLocaleTimeString()}</div>
+          <div>TIMESTAMP: {currentTime || "--:--:--"}</div>
           <div>SESSION: ACTIVE</div>
           <div>FOCUS LEVEL: OPTIMAL</div>
         </div>
       </div>
 
-      {/* Bottom Status Bar */}
-      <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-10 pointer-events-none">
-        <div className="bg-black/80 backdrop-blur-md border border-cyan-500/30 rounded-lg px-6 py-2">
-          <div className="flex items-center gap-4 text-cyan-400/80 font-mono text-sm">
-            <div className="flex items-center gap-2">
-              <div className="w-1 h-1 bg-green-400 rounded-full animate-pulse"></div>
-              <span>SYSTEM READY</span>
-            </div>
-            <div className="w-px h-4 bg-cyan-500/30"></div>
-            <div className="flex items-center gap-2">
-              <div className="w-1 h-1 bg-blue-400 rounded-full animate-pulse"></div>
-              <span>COGNITIVE ENHANCEMENT</span>
-            </div>
-            <div className="w-px h-4 bg-cyan-500/30"></div>
-            <div className="flex items-center gap-2">
-              <div className="w-1 h-1 bg-purple-400 rounded-full animate-pulse"></div>
-              <span>NEURAL SYNC</span>
-            </div>
-          </div>
+      {/* Bottom Music Controls */}
+      <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 pointer-events-auto">
+        <div className="bg-black/80 backdrop-blur-md border border-cyan-500/30 rounded-lg px-6 py-2 pointer-events-auto">
+          <BackgroundMusic />
         </div>
       </div>
 
