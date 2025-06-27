@@ -40,18 +40,26 @@ export default function Home() {
         return (
           <div className="text-center relative">
             {/* Holographic Title */}
-            <div className="relative mb-8">
-              <h1 className="text-6xl font-bold bg-gradient-to-r from-cyan-400 via-blue-500 to-cyan-600 bg-clip-text text-transparent mb-4 animate-pulse">
-                POMODORO
-              </h1>
+            <div className="relativesu">
+              
               <div className="absolute inset-0 text-6xl font-bold text-cyan-400/20 blur-sm">
                 POMODORO
               </div>
             </div>
 
-            <p className="text-xl text-cyan-300/80 mb-8 font-mono">
-              &gt; Time management protocol active...
-            </p>
+            <div className="text-center mb-8">
+              <p className="text-xl text-cyan-300/80 font-mono mb-3">
+                &gt; You have 2 choices today:
+              </p>
+              <div className="space-y-2">
+                <p className="text-lg text-cyan-400 font-bold font-mono">
+                  [1] Work hard
+                </p>
+                <p className="text-lg text-cyan-400 font-bold font-mono">
+                  [2] Work SMART and hard
+                </p>
+              </div>
+            </div>
 
             {/* Pomodoro Timer */}
             <PomodoroTimer />

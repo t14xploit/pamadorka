@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import { Dock, DockIcon } from "@/components/magicui/dock";
 import {
   Brain,
   Gamepad2,
@@ -64,69 +63,78 @@ export function PomodoroDock({ onModeChange, currentMode = "studying" }: Pomodor
   ];
 
   return (
-    <div className="fixed left-8 top-1/2 transform -translate-y-1/2 z-50">
-      {/* Holographic Grid Background */}
-      <div className="absolute -inset-4 bg-gradient-to-b from-cyan-500/10 via-transparent to-purple-500/10 rounded-3xl blur-xl"></div>
+    <div className="fixed left-6 top-1/2 transform -translate-y-1/2 z-50">
+      {/* Attention-Grabbing Background */}
+      <div className="absolute -inset-8 bg-gradient-to-r from-cyan-500/20 via-purple-500/20 to-pink-500/20 rounded-3xl blur-2xl animate-pulse"></div>
 
       {/* Main Dock Container */}
-      <div className="relative bg-black/80 backdrop-blur-xl border border-cyan-500/30 rounded-2xl p-3 shadow-2xl">
-        {/* Animated Border Glow */}
-        <div className="absolute inset-0 bg-gradient-to-b from-cyan-500/20 via-purple-500/20 to-pink-500/20 rounded-2xl blur-sm animate-pulse"></div>
+      <div className="relative bg-black/90 backdrop-blur-xl border-2 border-cyan-400/50 rounded-2xl p-4 shadow-2xl">
+        {/* Animated Border */}
+        <div className="absolute inset-0 rounded-2xl bg-gradient-to-b from-cyan-400/30 via-purple-400/30 to-pink-400/30 blur-sm animate-pulse"></div>
 
-        <Dock
-          iconMagnification={70}
-          iconDistance={120}
-          direction="middle"
-          orientation="vertical"
-        >
-          {dockItems.map((item) => {
+        {/* Dock Items */}
+        <div className="relative flex flex-col gap-4">
+          {dockItems.map((item, index) => {
             const Icon = item.icon;
             const isActive = activeMode === item.id;
 
             return (
-              <DockIcon
+              <div
                 key={item.id}
-                className={`
-                  relative group transition-all duration-300 ease-out
-                  ${isActive
-                    ? `${item.color} shadow-2xl ${item.glowColor} scale-110 bg-gradient-to-br from-black/90 to-gray-900/90 ${item.borderColor} border-2`
-                    : 'text-gray-500 hover:text-white bg-black/60 hover:bg-gradient-to-br hover:from-gray-800/80 hover:to-black/80 border border-gray-700/50 hover:border-cyan-500/50'
-                  }
-                  backdrop-blur-md rounded-xl
-                  before:absolute before:inset-0 before:rounded-xl before:bg-gradient-to-br before:from-white/10 before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300
-                `}
-                onClick={() => handleModeChange(item.id)}
+                className="relative group"
+                style={{ animationDelay: `${index * 100}ms` }}
               >
-                {/* Holographic Glow Effect */}
+              {/* Main Button */}
+              <button
+                onClick={() => handleModeChange(item.id)}
+                className={`
+                  relative w-14 h-14 rounded-full flex items-center justify-center
+                  transition-all duration-300 ease-out transform
+                  ${isActive
+                    ? `${item.color} bg-gradient-to-br from-black/90 to-gray-900/80 scale-125 shadow-2xl ${item.glowColor}`
+                    : 'text-gray-400 bg-gradient-to-br from-black/50 to-black/30 hover:from-black/80 hover:to-black/60 hover:text-white hover:scale-115'
+                  }
+                  backdrop-blur-md border border-white/20 hover:border-white/40
+                  group-hover:shadow-xl
+                  before:absolute before:inset-0 before:rounded-full before:bg-gradient-to-br before:from-white/10 before:to-transparent before:opacity-0 hover:before:opacity-100 before:transition-opacity before:duration-300
+                `}
+              >
+                {/* Glow Ring for Active */}
                 {isActive && (
-                  <div className={`absolute inset-0 rounded-xl bg-gradient-to-br from-${item.neonColor}-400/20 to-${item.neonColor}-600/20 blur-md animate-pulse`}></div>
+                  <div className={`absolute -inset-3 rounded-full border-2 ${item.borderColor} opacity-40 animate-pulse`}></div>
                 )}
+
+                {/* Hover Glow Effect */}
+                <div className={`absolute -inset-4 rounded-full bg-gradient-to-br from-${item.neonColor}-500/0 to-${item.neonColor}-600/0 group-hover:from-${item.neonColor}-500/20 group-hover:to-${item.neonColor}-600/10 blur-xl transition-all duration-300`}></div>
 
                 {/* Icon */}
                 <Icon
-                  size={28}
-                  className={`
-                    relative z-10 transition-all duration-300
-                    ${isActive ? 'scale-110 drop-shadow-lg' : 'group-hover:scale-105'}
-                    ${isActive ? `filter drop-shadow-[0_0_8px_${item.neonColor === 'cyan' ? '#00ffff' : item.neonColor === 'green' ? '#00ff00' : item.neonColor === 'purple' ? '#8b5cf6' : '#ec4899'}]` : ''}
-                  `}
+                  size={24}
+                  className={`relative z-10 transition-all duration-300 ${isActive ? 'scale-110' : 'group-hover:scale-125'}`}
                 />
 
-                {/* Tooltip */}
-                <div className={`
-                  absolute left-full ml-4 px-3 py-2 bg-black/90 backdrop-blur-md
-                  border ${item.borderColor} rounded-lg text-sm ${item.color}
-                  opacity-0 group-hover:opacity-100 transition-all duration-300
-                  pointer-events-none whitespace-nowrap z-20
-                  shadow-lg ${item.glowColor}
-                `}>
-                  {item.label}
-                  <div className={`absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1 w-2 h-2 bg-black/90 border-l ${item.borderColor} border-b rotate-45`}></div>
-                </div>
-              </DockIcon>
-            );
-          })}
-        </Dock>
+                {/* Active Indicator Dot */}
+                {isActive && (
+                  <div className={`absolute -top-1 -right-1 w-3 h-3 ${item.color.replace('text-', 'bg-')} rounded-full animate-pulse shadow-lg`}></div>
+                )}
+              </button>
+
+              {/* Hover Label */}
+              <div className={`
+                absolute left-16 top-1/2 transform -translate-y-1/2
+                px-3 py-1 bg-black/90 backdrop-blur-md rounded-md
+                ${item.color} text-sm font-medium
+                opacity-0 group-hover:opacity-100 transition-all duration-300
+                pointer-events-none whitespace-nowrap
+                translate-x-2 group-hover:translate-x-0
+                border border-white/20
+              `}>
+                {item.label}
+              </div>
+            </div>
+          );
+        })}
+        </div>
       </div>
     </div>
   );
