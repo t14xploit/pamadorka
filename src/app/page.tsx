@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { PomodoroDock, PomodoroMode } from "@/components/pomodoro-dock";
+import { AREffects } from "@/components/ar-effects";
 
 export default function Home() {
   const [currentMode, setCurrentMode] = useState<PomodoroMode>("studying");
@@ -15,61 +16,100 @@ export default function Home() {
     switch (currentMode) {
       case "studying":
         return (
-          <div className="text-center">
-            <h1 className="text-4xl font-bold text-blue-500 mb-4">Study Mode</h1>
-            <p className="text-lg text-gray-600 dark:text-gray-300">
-              Focus on your studies with the Pomodoro technique
-            </p>
-            <div className="mt-8 p-6 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-              <h2 className="text-2xl font-semibold mb-4">Ready to Study?</h2>
-              <p className="text-gray-700 dark:text-gray-300">
-                Start your focused study session. We'll help you stay productive!
-              </p>
+          <div className="text-center relative">
+            {/* Clean minimal content for studying mode */}
+            <div className="relative mt-12 p-8 bg-black/60 backdrop-blur-xl border border-cyan-500/30 rounded-2xl shadow-2xl">
+              <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-transparent to-blue-500/10 rounded-2xl"></div>
+              <div className="relative z-10">
+                {/* You can add your new content here */}
+              </div>
             </div>
           </div>
         );
       case "playing":
         return (
-          <div className="text-center">
-            <h1 className="text-4xl font-bold text-green-500 mb-4">Play Mode</h1>
-            <p className="text-lg text-gray-600 dark:text-gray-300">
-              Take a break and enjoy some games
+          <div className="text-center relative">
+            <div className="relative mb-8">
+              <h1 className="text-6xl font-bold bg-gradient-to-r from-green-400 via-emerald-500 to-green-600 bg-clip-text text-transparent mb-4 animate-pulse">
+                VR PLAYGROUND
+              </h1>
+              <div className="absolute inset-0 text-6xl font-bold text-green-400/20 blur-sm">
+                VR PLAYGROUND
+              </div>
+            </div>
+
+            <p className="text-xl text-green-300/80 mb-8 font-mono">
+              &gt; Loading virtual reality environment...
             </p>
-            <div className="mt-8 p-6 bg-green-50 dark:bg-green-900/20 rounded-lg">
-              <h2 className="text-2xl font-semibold mb-4">Break Time!</h2>
-              <p className="text-gray-700 dark:text-gray-300">
-                Relax and recharge with some fun activities.
-              </p>
+
+            <div className="relative mt-12 p-8 bg-black/60 backdrop-blur-xl border border-green-500/30 rounded-2xl shadow-2xl">
+              <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 via-transparent to-emerald-500/10 rounded-2xl"></div>
+              <div className="relative z-10">
+                <h2 className="text-3xl font-bold text-green-400 mb-6 font-mono">[BREAK PROTOCOL]</h2>
+                <p className="text-green-300/70 text-lg leading-relaxed">
+                  Reality simulation active. Stress levels: <span className="text-green-400 font-bold">MINIMAL</span>
+                  <br />
+                  Recharge sequence initiated.
+                </p>
+              </div>
             </div>
           </div>
         );
       case "music":
         return (
-          <div className="text-center">
-            <h1 className="text-4xl font-bold text-purple-500 mb-4">Music Mode</h1>
-            <p className="text-lg text-gray-600 dark:text-gray-300">
-              Listen to focus music while studying
+          <div className="text-center relative">
+            <div className="relative mb-8">
+              <h1 className="text-6xl font-bold bg-gradient-to-r from-purple-400 via-violet-500 to-purple-600 bg-clip-text text-transparent mb-4 animate-pulse">
+                AUDIO MATRIX
+              </h1>
+              <div className="absolute inset-0 text-6xl font-bold text-purple-400/20 blur-sm">
+                AUDIO MATRIX
+              </div>
+            </div>
+
+            <p className="text-xl text-purple-300/80 mb-8 font-mono">
+              &gt; Synchronizing neural frequencies...
             </p>
-            <div className="mt-8 p-6 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
-              <h2 className="text-2xl font-semibold mb-4">Focus Sounds</h2>
-              <p className="text-gray-700 dark:text-gray-300">
-                Enhance your concentration with ambient music.
-              </p>
+
+            <div className="relative mt-12 p-8 bg-black/60 backdrop-blur-xl border border-purple-500/30 rounded-2xl shadow-2xl">
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-transparent to-violet-500/10 rounded-2xl"></div>
+              <div className="relative z-10">
+                <h2 className="text-3xl font-bold text-purple-400 mb-6 font-mono">[AUDIO SYNC]</h2>
+                <p className="text-purple-300/70 text-lg leading-relaxed">
+                  Binaural beats activated. Concentration enhancement: <span className="text-purple-400 font-bold">ONLINE</span>
+                  <br />
+                  Neural harmony achieved.
+                </p>
+              </div>
             </div>
           </div>
         );
       case "videos":
         return (
-          <div className="text-center">
-            <h1 className="text-4xl font-bold text-red-500 mb-4">Videos Mode</h1>
-            <p className="text-lg text-gray-600 dark:text-gray-300">
-              Watch educational or relaxing videos
+          <div className="text-center relative">
+            <div className="relative mb-8">
+              <h1 className="text-6xl font-bold bg-gradient-to-r from-pink-400 via-rose-500 to-pink-600 bg-clip-text text-transparent mb-4 animate-pulse">
+                HOLO DISPLAY
+              </h1>
+              <div className="absolute inset-0 text-6xl font-bold text-pink-400/20 blur-sm">
+                HOLO DISPLAY
+              </div>
+            </div>
+
+            <p className="text-xl text-pink-300/80 mb-8 font-mono">
+              &gt; Projecting holographic content...
             </p>
-            <div className="mt-8 p-6 bg-red-50 dark:bg-red-900/20 rounded-lg">
-              <h2 className="text-2xl font-semibold mb-4">Video Content</h2>
-              <p className="text-gray-700 dark:text-gray-300">
-                Educational videos and relaxing content for your breaks.
-              </p>
+
+            <div className="relative mt-12 p-8 bg-black/60 backdrop-blur-xl border border-pink-500/30 rounded-2xl shadow-2xl">
+              <div className="absolute inset-0 bg-gradient-to-br from-pink-500/10 via-transparent to-rose-500/10 rounded-2xl"></div>
+              <div className="relative z-10">
+                <h2 className="text-3xl font-bold text-pink-400 mb-6 font-mono">[HOLO ACTIVE]</h2>
+                <p className="text-pink-300/70 text-lg leading-relaxed">
+                  Visual cortex stimulation: <span className="text-pink-400 font-bold">OPTIMAL</span>
+                  <br />
+                  Knowledge transfer protocol engaged.
+                </p>
+              </div>
             </div>
           </div>
         );
@@ -79,17 +119,62 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
-      <main className="container mx-auto px-4 py-16 flex items-center justify-center min-h-screen">
-        <div className="max-w-2xl w-full">
+    <div className="min-h-screen bg-black relative overflow-hidden">
+      {/* AR/VR Effects */}
+      <AREffects />
+
+      {/* Animated Grid Background */}
+      <div className="absolute inset-0 opacity-20">
+        <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-purple-500/5 to-pink-500/10"></div>
+        <div
+          className="absolute inset-0 opacity-30"
+          style={{
+            backgroundImage: `
+              linear-gradient(rgba(0, 255, 255, 0.1) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(0, 255, 255, 0.1) 1px, transparent 1px)
+            `,
+            backgroundSize: '50px 50px',
+            animation: 'grid-move 20s linear infinite'
+          }}
+        ></div>
+      </div>
+
+      {/* Floating Particles */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {[...Array(20)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute w-1 h-1 bg-cyan-400 rounded-full opacity-60 animate-pulse"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 3}s`,
+              animationDuration: `${2 + Math.random() * 3}s`
+            }}
+          ></div>
+        ))}
+      </div>
+
+      {/* Main Content */}
+      <main className="relative z-10 container mx-auto px-4 py-16 flex items-center justify-center min-h-screen">
+        <div className="max-w-4xl w-full">
           {getModeContent()}
         </div>
       </main>
 
+      {/* Cyberpunk Dock */}
       <PomodoroDock
         currentMode={currentMode}
         onModeChange={handleModeChange}
       />
+
+      {/* Custom Styles */}
+      <style jsx>{`
+        @keyframes grid-move {
+          0% { transform: translate(0, 0); }
+          100% { transform: translate(50px, 50px); }
+        }
+      `}</style>
     </div>
   );
 }
