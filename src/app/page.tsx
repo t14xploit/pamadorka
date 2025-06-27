@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { PomodoroDock, PomodoroMode } from "@/components/pomodoro-dock";
 import { AREffects } from "@/components/ar-effects";
+import { PomodoroTimer } from "@/components/pomodoro-timer";
 
 export default function Home() {
   const [currentMode, setCurrentMode] = useState<PomodoroMode>("studying");
@@ -17,13 +18,22 @@ export default function Home() {
       case "studying":
         return (
           <div className="text-center relative">
-            {/* Clean minimal content for studying mode */}
-            <div className="relative mt-12 p-8 bg-black/60 backdrop-blur-xl border border-cyan-500/30 rounded-2xl shadow-2xl">
-              <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-transparent to-blue-500/10 rounded-2xl"></div>
-              <div className="relative z-10">
-                {/* You can add your new content here */}
+            {/* Holographic Title */}
+            <div className="relative mb-8">
+              <h1 className="text-6xl font-bold bg-gradient-to-r from-cyan-400 via-blue-500 to-cyan-600 bg-clip-text text-transparent mb-4 animate-pulse">
+                POMODORO
+              </h1>
+              <div className="absolute inset-0 text-6xl font-bold text-cyan-400/20 blur-sm">
+                POMODORO
               </div>
             </div>
+
+            <p className="text-xl text-cyan-300/80 mb-8 font-mono">
+              &gt; Time management protocol active...
+            </p>
+
+            {/* Pomodoro Timer */}
+            <PomodoroTimer />
           </div>
         );
       case "playing":
