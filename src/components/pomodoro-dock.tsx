@@ -7,7 +7,6 @@ import {
   Play, 
   Music, 
   Video,
-  Home
 } from "lucide-react";
 
 export type PomodoroMode = "studying" | "playing" | "music" | "videos";
@@ -59,8 +58,9 @@ export function PomodoroDock({ onModeChange, currentMode = "studying" }: Pomodor
   return (
     <div className="fixed left-8 top-1/2 transform -translate-y-1/2 z-50">
       <Dock
-        magnification={60}
-        distance={140}
+
+        iconMagnification={60}
+        iconDistance={140}
         direction="middle"
         orientation="vertical"
       >
