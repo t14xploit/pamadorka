@@ -10,14 +10,14 @@ interface PomodoroTimerProps {
 }
 
 const timerSettings = {
-  work: 0.5 * 60,      // 25 minutes
+  work: 25 * 60,      // 25 minutes
   shortBreak: 5 * 60, // 5 minutes
   longBreak: 15 * 60  // 15 minutes
 };
 
 export function PomodoroTimer({ className }: PomodoroTimerProps) {
   const [mode, setMode] = useState<TimerMode>("work");
-  const [timeLeft, setTimeLeft] = useState(0.5 * 60); // 25 minutes in seconds
+  const [timeLeft, setTimeLeft] = useState(25 * 60); // 25 minutes in seconds
   const [isRunning, setIsRunning] = useState(false);
   const [sessions, setSessions] = useState(0);
   const [showAlert, setShowAlert] = useState(false);
