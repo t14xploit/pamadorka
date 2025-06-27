@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { PomodoroDock, PomodoroMode } from "@/components/pomodoro-dock";
 import { AREffects } from "@/components/ar-effects";
 import { PomodoroTimer } from "@/components/pomodoro-timer";
+import { YouTubeMusicSearch } from "@/components/youtube-music-search";
+import { DateTimeDisplay } from "@/components/date-time-display";
 
 interface Particle {
   id: number;
@@ -107,18 +109,15 @@ export default function Home() {
             </div>
 
             <p className="text-xl text-purple-300/80 mb-8 font-mono">
-              &gt; Synchronizing neural frequencies...
+              &gt; Neural frequency synchronization active...
             </p>
 
-            <div className="relative mt-12 p-8 bg-black/60 backdrop-blur-xl border border-purple-500/30 rounded-2xl shadow-2xl">
+            {/* YouTube Music Search Interface */}
+            <div className="relative mt-12 p-8 bg-black/60 backdrop-blur-xl border border-purple-500/30 rounded-2xl shadow-2xl max-w-4xl mx-auto">
               <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-transparent to-violet-500/10 rounded-2xl"></div>
               <div className="relative z-10">
-                <h2 className="text-3xl font-bold text-purple-400 mb-6 font-mono">[AUDIO SYNC]</h2>
-                <p className="text-purple-300/70 text-lg leading-relaxed">
-                  Binaural beats activated. Concentration enhancement: <span className="text-purple-400 font-bold">ONLINE</span>
-                  <br />
-                  Neural harmony achieved.
-                </p>
+                <h2 className="text-3xl font-bold text-purple-400 mb-6 font-mono">[MUSIC SEARCH PROTOCOL]</h2>
+                <YouTubeMusicSearch />
               </div>
             </div>
           </div>
@@ -193,6 +192,9 @@ export default function Home() {
           ></div>
         ))}
       </div>
+
+      {/* Date Time Display */}
+      <DateTimeDisplay />
 
       {/* Main Content */}
       <main className="relative z-10 container mx-auto px-4 py-16 flex items-center justify-center min-h-screen">

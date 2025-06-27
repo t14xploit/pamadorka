@@ -93,22 +93,7 @@ export function AREffects() {
       </div>
 
       {/* Corner UI Elements */}
-      <div className="fixed top-4 left-4 z-10 pointer-events-none">
-        <div className="text-cyan-400/60 font-mono text-xs space-y-1">
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-            <span>NEURAL LINK: ACTIVE</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></div>
-            <span>AR MODE: ENABLED</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></div>
-            <span>SYNC: 98.7%</span>
-          </div>
-        </div>
-      </div>
+      
 
       <div className="fixed top-4 right-4 z-10 pointer-events-none">
         <div className="text-cyan-400/60 font-mono text-xs text-right space-y-1">
