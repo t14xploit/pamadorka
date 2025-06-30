@@ -1,27 +1,49 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { Play, Pause, RotateCcw, Coffee, Brain } from "lucide-react";
 
-type TimerMode = "work" | "shortBreak" | "longBreak";
+export type TimerMode = "work" | "shortBreak" | "longBreak";
 
 interface PomodoroTimerProps {
   className?: string;
+  mode: TimerMode;
+  timeLeft: number;
+  isRunning: boolean;
+  sessions: number;
+  showAlert: boolean;
+  completedMode: TimerMode | null;
+  onModeChange: (mode: TimerMode) => void;
+  onTimeChange: (time: number) => void;
+  onToggleTimer: () => void;
+
+  onSessionsChange: (sessions: number) => void;
+  onShowAlert: (show: boolean) => void;
+  onCompletedModeChange: (mode: TimerMode | null) => void;
 }
 
-const timerSettings = {
+export const timerSettings = {
   work: 25 * 60,      // 25 minutes
   shortBreak: 5 * 60, // 5 minutes
   longBreak: 15 * 60  // 15 minutes
 };
 
-export function PomodoroTimer({ className }: PomodoroTimerProps) {
-  const [mode, setMode] = useState<TimerMode>("work");
-  const [timeLeft, setTimeLeft] = useState(25 * 60); // 25 minutes in seconds
-  const [isRunning, setIsRunning] = useState(false);
-  const [sessions, setSessions] = useState(0);
-  const [showAlert, setShowAlert] = useState(false);
-  const [completedMode, setCompletedMode] = useState<TimerMode | null>(null);
+export function PomodoroTimer({
+  className,
+  mode,
+  timeLeft,
+  isRunning,
+  sessions,
+  showAlert,
+  completedMode,
+  onModeChange,
+  onTimeChange,
+  onToggleTimer,
+
+  onSessionsChange,
+  onShowAlert,
+  onCompletedModeChange
+}: PomodoroTimerProps) {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -79,7 +101,7 @@ export function PomodoroTimer({ className }: PomodoroTimerProps) {
   useEffect(() => {
     if (isRunning && timeLeft > 0) {
       intervalRef.current = setInterval(() => {
-        setTimeLeft((prev) => prev - 1);
+        onTimeChange(timeLeft - 1);
       }, 1000);
     } else {
       if (intervalRef.current) {
@@ -89,13 +111,13 @@ export function PomodoroTimer({ className }: PomodoroTimerProps) {
 
     // Auto-switch modes when timer reaches 0
     if (timeLeft === 0 && isRunning) {
-      setIsRunning(false);
+      onToggleTimer(); // Stop the timer
 
       // Store what just completed for the alert message
-      setCompletedMode(mode);
+      onCompletedModeChange(mode);
 
       // Show alert and play sound
-      setShowAlert(true);
+      onShowAlert(true);
       if (audioRef.current) {
         try {
           audioRef.current.play();
@@ -106,19 +128,19 @@ export function PomodoroTimer({ className }: PomodoroTimerProps) {
 
       // Auto-hide alert after 5 seconds
       setTimeout(() => {
-        setShowAlert(false);
-        setCompletedMode(null);
+        onShowAlert(false);
+        onCompletedModeChange(null);
       }, 5000);
 
       if (mode === "work") {
-        setSessions(prev => prev + 1);
+        onSessionsChange(sessions + 1);
         // Every 4 work sessions, take a long break
         const nextMode = (sessions + 1) % 4 === 0 ? "longBreak" : "shortBreak";
-        setMode(nextMode);
-        setTimeLeft(timerSettings[nextMode]);
+        onModeChange(nextMode);
+        onTimeChange(timerSettings[nextMode]);
       } else {
-        setMode("work");
-        setTimeLeft(timerSettings.work);
+        onModeChange("work");
+        onTimeChange(timerSettings.work);
       }
     }
 
@@ -127,7 +149,7 @@ export function PomodoroTimer({ className }: PomodoroTimerProps) {
         clearInterval(intervalRef.current);
       }
     };
-  }, [isRunning, timeLeft, mode, sessions]);
+  }, [isRunning, timeLeft, mode, sessions, onTimeChange, onToggleTimer, onCompletedModeChange, onShowAlert, onSessionsChange, onModeChange]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -135,19 +157,19 @@ export function PomodoroTimer({ className }: PomodoroTimerProps) {
     return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
   };
 
-  const toggleTimer = () => {
-    setIsRunning(!isRunning);
+  const switchMode = (newMode: TimerMode) => {
+    if (isRunning) {
+      onToggleTimer(); // Stop the timer
+    }
+    onModeChange(newMode);
+    onTimeChange(timerSettings[newMode]);
   };
 
   const resetTimer = () => {
-    setIsRunning(false);
-    setTimeLeft(timerSettings[mode]);
-  };
-
-  const switchMode = (newMode: TimerMode) => {
-    setIsRunning(false);
-    setMode(newMode);
-    setTimeLeft(timerSettings[newMode]);
+    if (isRunning) {
+      onToggleTimer(); // Stop the timer
+    }
+    onTimeChange(timerSettings[mode]);
   };
 
   const progress = ((timerSettings[mode] - timeLeft) / timerSettings[mode]) * 100;
@@ -172,8 +194,8 @@ export function PomodoroTimer({ className }: PomodoroTimerProps) {
             </p>
             <button
               onClick={() => {
-                setShowAlert(false);
-                setCompletedMode(null);
+                onShowAlert(false);
+                onCompletedModeChange(null);
               }}
               className="px-6 py-3 bg-cyan-500/20 border border-cyan-500/50 rounded-lg text-cyan-400 font-mono hover:bg-cyan-500/30 transition-all duration-300"
             >
@@ -248,7 +270,7 @@ export function PomodoroTimer({ className }: PomodoroTimerProps) {
         {/* Controls */}
         <div className="flex justify-center gap-4">
           <button
-            onClick={toggleTimer}
+            onClick={onToggleTimer}
             className={`
               flex items-center gap-2 px-6 py-3 rounded-lg font-mono font-bold
               ${currentConfig.color} bg-black/60 ${currentConfig.borderColor} border

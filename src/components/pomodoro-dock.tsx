@@ -5,10 +5,10 @@ import {
   Brain,
   Gamepad2,
   Headphones,
-  Monitor,
+  BarChart3,
 } from "lucide-react";
 
-export type PomodoroMode = "studying" | "playing" | "music" | "videos";
+export type PomodoroMode = "studying" | "playing" | "music" | "statistics";
 
 interface PomodoroDockProps {
   onModeChange?: (mode: PomodoroMode) => void;
@@ -52,13 +52,13 @@ export function PomodoroDock({ onModeChange, currentMode = "studying" }: Pomodor
       borderColor: "border-purple-500/30",
     },
     {
-      id: "videos" as PomodoroMode,
-      icon: Monitor,
-      label: "Holo Display",
-      color: "text-pink-400",
-      neonColor: "pink",
-      glowColor: "shadow-pink-500/50",
-      borderColor: "border-pink-500/30",
+      id: "statistics" as PomodoroMode,
+      icon: BarChart3,
+      label: "Neural Analytics",
+      color: "text-yellow-400",
+      neonColor: "yellow",
+      glowColor: "shadow-yellow-500/50",
+      borderColor: "border-yellow-500/30",
     },
   ];
 
