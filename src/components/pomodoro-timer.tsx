@@ -17,7 +17,7 @@ interface PomodoroTimerProps {
   onTimeChange: (time: number) => void;
   onToggleTimer: () => void;
 
-  onSessionsChange: (sessions: number) => void;
+
   onShowAlert: (show: boolean) => void;
   onCompletedModeChange: (mode: TimerMode | null) => void;
 }
@@ -40,11 +40,10 @@ export function PomodoroTimer({
   onTimeChange,
   onToggleTimer,
 
-  onSessionsChange,
+
   onShowAlert,
   onCompletedModeChange
 }: PomodoroTimerProps) {
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const modeConfig = {

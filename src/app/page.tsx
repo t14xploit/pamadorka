@@ -185,14 +185,7 @@ export default function Home() {
 
 
 
-  const handleSessionsChange = (newSessions: number) => {
-    setSessions(newSessions);
 
-    // Update statistics when a work session is completed
-    if (newSessions > sessions && typeof window !== 'undefined') {
-      updateStatistics();
-    }
-  };
 
   const updateFocusTimeStatistics = (focusTimeInSeconds: number) => {
     const today = new Date().toISOString().split('T')[0];
@@ -435,7 +428,7 @@ export default function Home() {
               onTimeChange={handleTimeChange}
               onToggleTimer={handleToggleTimer}
 
-              onSessionsChange={handleSessionsChange}
+
               onShowAlert={handleShowAlert}
               onCompletedModeChange={handleCompletedModeChange}
             />
