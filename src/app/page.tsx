@@ -48,6 +48,8 @@ export default function Home() {
   const [completedMode, setCompletedMode] = useState<TimerMode | null>(null);
   const [timerStartTime, setTimerStartTime] = useState<number | null>(null);
   const [initialTimeLeft, setInitialTimeLeft] = useState(25 * 60);
+  const [sessionStartTime, setSessionStartTime] = useState<number | null>(null);
+  const [accumulatedFocusTime, setAccumulatedFocusTime] = useState(0); // in seconds
 
   // Load timer state from localStorage on mount
   useEffect(() => {
@@ -70,13 +72,21 @@ export default function Home() {
               setIsTimerRunning(true);
               setTimerStartTime(parsed.timerStartTime);
               setInitialTimeLeft(parsed.initialTimeLeft);
+              setSessionStartTime(parsed.sessionStartTime || null);
+              setAccumulatedFocusTime(parsed.accumulatedFocusTime || 0);
             } else {
-              // Timer has completed while away
+              // Timer has completed while away - save any accumulated focus time
+              if (parsed.timerMode === "work" && parsed.sessionStartTime) {
+                const totalSessionTime = Math.floor((now - parsed.sessionStartTime) / 1000);
+                const totalFocusTime = (parsed.accumulatedFocusTime || 0) + totalSessionTime;
+                updateFocusTimeStatistics(totalFocusTime);
+              }
               setTimeLeft(0);
               setIsTimerRunning(false);
             }
           } else {
             setTimeLeft(parsed.timeLeft || timerSettings.work);
+            setAccumulatedFocusTime(parsed.accumulatedFocusTime || 0);
           }
         } catch (error) {
           console.log("Failed to parse saved timer state:", error);
@@ -92,11 +102,16 @@ export default function Home() {
         timerMode,
         timeLeft,
         sessions,
+        isRunning: isTimerRunning,
+        timerStartTime,
+        initialTimeLeft,
+        sessionStartTime,
+        accumulatedFocusTime,
         lastSaved: Date.now()
       };
       localStorage.setItem('pomodoroTimerState', JSON.stringify(timerState));
     }
-  }, [timerMode, timeLeft, sessions]);
+  }, [timerMode, timeLeft, sessions, isTimerRunning, timerStartTime, initialTimeLeft, sessionStartTime, accumulatedFocusTime]);
 
   const handleModeChange = (mode: PomodoroMode) => {
     setCurrentMode(mode);
@@ -105,15 +120,67 @@ export default function Home() {
 
   // Timer handlers
   const handleTimerModeChange = (mode: TimerMode) => {
+    // Save any accumulated focus time before switching modes
+    if (timerMode === "work" && isTimerRunning && sessionStartTime) {
+      const focusTimeSpent = Math.floor((Date.now() - sessionStartTime) / 1000);
+      const totalFocusTime = accumulatedFocusTime + focusTimeSpent;
+      updateFocusTimeStatistics(totalFocusTime);
+    }
+
     setTimerMode(mode);
+    const newTime = timerSettings[mode];
+    setTimeLeft(newTime);
+    setInitialTimeLeft(newTime);
+    setAccumulatedFocusTime(0); // Reset accumulated time
+
+    if (isTimerRunning) {
+      setTimerStartTime(Date.now());
+      // Start new session tracking for work mode
+      if (mode === "work") {
+        setSessionStartTime(Date.now());
+      } else {
+        setSessionStartTime(null);
+      }
+    } else {
+      setSessionStartTime(null);
+    }
   };
 
   const handleTimeChange = (time: number) => {
     setTimeLeft(time);
+    setInitialTimeLeft(time);
+    if (isTimerRunning) {
+      setTimerStartTime(Date.now());
+    }
   };
 
   const handleToggleTimer = () => {
-    setIsTimerRunning(!isTimerRunning);
+    if (!isTimerRunning) {
+      // Starting the timer
+      const now = Date.now();
+      setTimerStartTime(now);
+      setInitialTimeLeft(timeLeft);
+      setIsTimerRunning(true);
+
+      // Start tracking session time for work mode
+      if (timerMode === "work") {
+        setSessionStartTime(now);
+      }
+    } else {
+      // Stopping the timer - save accumulated focus time
+      if (timerMode === "work" && sessionStartTime) {
+        const focusTimeSpent = Math.floor((Date.now() - sessionStartTime) / 1000);
+        const newAccumulatedTime = accumulatedFocusTime + focusTimeSpent;
+        setAccumulatedFocusTime(newAccumulatedTime);
+
+        // Update statistics with the focus time spent
+        updateFocusTimeStatistics(focusTimeSpent);
+      }
+
+      setIsTimerRunning(false);
+      setTimerStartTime(null);
+      setSessionStartTime(null);
+    }
   };
 
 
@@ -125,6 +192,81 @@ export default function Home() {
     if (newSessions > sessions && typeof window !== 'undefined') {
       updateStatistics();
     }
+  };
+
+  const updateFocusTimeStatistics = (focusTimeInSeconds: number) => {
+    const today = new Date().toISOString().split('T')[0];
+    const savedStats = localStorage.getItem('pomodoroStats');
+
+    let stats: StatisticsData = {
+      totalSessions: 0,
+      totalFocusTime: 0,
+      currentStreak: 0,
+      longestStreak: 0,
+      todaysSessions: 0,
+      weeklyData: []
+    };
+
+    if (savedStats) {
+      try {
+        stats = JSON.parse(savedStats);
+      } catch (error) {
+        console.log("Failed to parse saved statistics:", error);
+      }
+    }
+
+    // Convert seconds to minutes
+    const focusTimeInMinutes = Math.round(focusTimeInSeconds / 60);
+
+    // Update total focus time
+    stats.totalFocusTime += focusTimeInMinutes;
+
+    // Update today's focus time
+    const todayData = stats.weeklyData.find((day: SessionData) => day.date === today);
+    if (todayData) {
+      todayData.totalFocusTime += focusTimeInMinutes;
+    } else {
+      stats.weeklyData.push({
+        date: today,
+        workSessions: 0,
+        totalFocusTime: focusTimeInMinutes,
+        shortBreaks: 0,
+        longBreaks: 0
+      });
+    }
+
+    // Update streak logic based on focus time (at least 5 minutes counts as active day)
+    const todayTotalFocus = stats.weeklyData.find((day: SessionData) => day.date === today)?.totalFocusTime || 0;
+
+    if (todayTotalFocus >= 5) { // At least 5 minutes of focus time
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      const yesterdayStr = yesterday.toISOString().split('T')[0];
+
+      const yesterdayData = stats.weeklyData.find((day: SessionData) => day.date === yesterdayStr);
+
+      // Check if this is the first time today we reach 5+ minutes
+      if (todayTotalFocus - focusTimeInMinutes < 5) {
+        if (yesterdayData && yesterdayData.totalFocusTime >= 5) {
+          stats.currentStreak += 1;
+        } else {
+          stats.currentStreak = 1;
+        }
+
+        if (stats.currentStreak > stats.longestStreak) {
+          stats.longestStreak = stats.currentStreak;
+        }
+      }
+    }
+
+    // Keep only last 30 days of data
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    stats.weeklyData = stats.weeklyData.filter((day: SessionData) =>
+      new Date(day.date) >= thirtyDaysAgo
+    );
+
+    localStorage.setItem('pomodoroStats', JSON.stringify(stats));
   };
 
   const updateStatistics = () => {
@@ -148,53 +290,24 @@ export default function Home() {
       }
     }
 
-    // Update statistics
+    // Update completed sessions
     stats.totalSessions += 1;
-    stats.totalFocusTime += 25; // 25 minutes per work session
 
     // Update today's sessions
     const todayData = stats.weeklyData.find((day: SessionData) => day.date === today);
     if (todayData) {
       todayData.workSessions += 1;
-      todayData.totalFocusTime += 25;
     } else {
       stats.weeklyData.push({
         date: today,
         workSessions: 1,
-        totalFocusTime: 25,
+        totalFocusTime: 0,
         shortBreaks: 0,
         longBreaks: 0
       });
     }
 
-    // Update streak logic
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    const yesterdayStr = yesterday.toISOString().split('T')[0];
-
-    const yesterdayData = stats.weeklyData.find((day: SessionData) => day.date === yesterdayStr);
-    const todaySessionCount = stats.weeklyData.find((day: SessionData) => day.date === today)?.workSessions || 0;
-
-    if (todaySessionCount === 1) { // First session of the day
-      if (yesterdayData && yesterdayData.workSessions > 0) {
-        stats.currentStreak += 1;
-      } else {
-        stats.currentStreak = 1;
-      }
-
-      if (stats.currentStreak > stats.longestStreak) {
-        stats.longestStreak = stats.currentStreak;
-      }
-    }
-
-    stats.todaysSessions = todaySessionCount;
-
-    // Keep only last 30 days of data
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-    stats.weeklyData = stats.weeklyData.filter((day: SessionData) =>
-      new Date(day.date) >= thirtyDaysAgo
-    );
+    stats.todaysSessions = stats.weeklyData.find((day: SessionData) => day.date === today)?.workSessions || 0;
 
     localStorage.setItem('pomodoroStats', JSON.stringify(stats));
   };
@@ -206,6 +319,70 @@ export default function Home() {
   const handleCompletedModeChange = (mode: TimerMode | null) => {
     setCompletedMode(mode);
   };
+
+  // Timestamp-based timer that works even when tab is inactive
+  useEffect(() => {
+    let intervalId: NodeJS.Timeout;
+
+    if (isTimerRunning && timerStartTime && initialTimeLeft > 0) {
+      intervalId = setInterval(() => {
+        const now = Date.now();
+        const elapsed = Math.floor((now - timerStartTime) / 1000);
+        const currentTimeLeft = Math.max(0, initialTimeLeft - elapsed);
+
+        setTimeLeft(currentTimeLeft);
+
+        // Timer completed
+        if (currentTimeLeft === 0) {
+          setIsTimerRunning(false);
+          setTimerStartTime(null);
+
+          // Handle timer completion
+          setCompletedMode(timerMode);
+          setShowAlert(true);
+
+          // Auto-hide alert after 5 seconds
+          setTimeout(() => {
+            setShowAlert(false);
+            setCompletedMode(null);
+          }, 5000);
+
+          if (timerMode === "work") {
+            // Save focus time for completed session
+            if (sessionStartTime) {
+              const focusTimeSpent = Math.floor((Date.now() - sessionStartTime) / 1000);
+              const totalFocusTime = accumulatedFocusTime + focusTimeSpent;
+              updateFocusTimeStatistics(totalFocusTime);
+              setAccumulatedFocusTime(0); // Reset for next session
+            }
+
+            const newSessions = sessions + 1;
+            setSessions(newSessions);
+
+            // Update completed session statistics
+            updateStatistics();
+
+            // Every 4 work sessions, take a long break
+            const nextMode = newSessions % 4 === 0 ? "longBreak" : "shortBreak";
+            setTimerMode(nextMode);
+            setTimeLeft(timerSettings[nextMode]);
+            setInitialTimeLeft(timerSettings[nextMode]);
+            setSessionStartTime(null);
+          } else {
+            setTimerMode("work");
+            setTimeLeft(timerSettings.work);
+            setInitialTimeLeft(timerSettings.work);
+          }
+        }
+      }, 100); // Update every 100ms for smooth display
+    }
+
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
+  }, [isTimerRunning, timerStartTime, initialTimeLeft, timerMode, sessions, accumulatedFocusTime, sessionStartTime]);
 
   // Generate particles on client side only
   useEffect(() => {

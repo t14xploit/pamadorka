@@ -98,26 +98,9 @@ export function PomodoroTimer({
     }
   }, []);
 
+  // Play sound when timer completes
   useEffect(() => {
-    if (isRunning && timeLeft > 0) {
-      intervalRef.current = setInterval(() => {
-        onTimeChange(timeLeft - 1);
-      }, 1000);
-    } else {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-    }
-
-    // Auto-switch modes when timer reaches 0
-    if (timeLeft === 0 && isRunning) {
-      onToggleTimer(); // Stop the timer
-
-      // Store what just completed for the alert message
-      onCompletedModeChange(mode);
-
-      // Show alert and play sound
-      onShowAlert(true);
+    if (timeLeft === 0 && showAlert) {
       if (audioRef.current) {
         try {
           audioRef.current.play();
@@ -125,31 +108,8 @@ export function PomodoroTimer({
           console.log("Audio play failed:", error);
         }
       }
-
-      // Auto-hide alert after 5 seconds
-      setTimeout(() => {
-        onShowAlert(false);
-        onCompletedModeChange(null);
-      }, 5000);
-
-      if (mode === "work") {
-        onSessionsChange(sessions + 1);
-        // Every 4 work sessions, take a long break
-        const nextMode = (sessions + 1) % 4 === 0 ? "longBreak" : "shortBreak";
-        onModeChange(nextMode);
-        onTimeChange(timerSettings[nextMode]);
-      } else {
-        onModeChange("work");
-        onTimeChange(timerSettings.work);
-      }
     }
-
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-    };
-  }, [isRunning, timeLeft, mode, sessions, onTimeChange, onToggleTimer, onCompletedModeChange, onShowAlert, onSessionsChange, onModeChange]);
+  }, [timeLeft, showAlert]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -158,17 +118,10 @@ export function PomodoroTimer({
   };
 
   const switchMode = (newMode: TimerMode) => {
-    if (isRunning) {
-      onToggleTimer(); // Stop the timer
-    }
     onModeChange(newMode);
-    onTimeChange(timerSettings[newMode]);
   };
 
   const resetTimer = () => {
-    if (isRunning) {
-      onToggleTimer(); // Stop the timer
-    }
     onTimeChange(timerSettings[mode]);
   };
 
