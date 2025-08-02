@@ -190,16 +190,16 @@ export function StatisticsDashboard() {
           <h2 className="text-2xl font-bold text-purple-400 mb-6 font-mono">[WEEKLY PROGRESS MATRIX]</h2>
           
           {stats.weeklyData.length > 0 ? (
-            <div className="grid grid-cols-7 gap-2">
+            <div className="grid grid-cols-7 gap-3 md:gap-4">
               {stats.weeklyData.slice(-7).map((day, index) => {
                 const intensity = Math.min(day.workSessions / 8, 1); // Max 8 sessions for full intensity
                 return (
-                  <div key={index} className="text-center">
-                    <div className="text-xs text-gray-400 font-mono mb-2">
+                  <div key={index} className="flex flex-col items-center space-y-2">
+                    <div className="text-xs text-gray-400 font-mono text-center min-h-[16px]">
                       {new Date(day.date).toLocaleDateString('en', { weekday: 'short' })}
                     </div>
                     <div
-                      className={`w-12 h-12 rounded-lg border border-purple-500/30 flex items-center justify-center font-mono text-sm transition-all duration-300 hover:scale-110`}
+                      className={`w-10 h-10 md:w-12 md:h-12 rounded-lg border border-purple-500/30 flex items-center justify-center font-mono text-xs md:text-sm transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-purple-500/30`}
                       style={{
                         backgroundColor: `rgba(168, 85, 247, ${intensity * 0.5})`,
                         borderColor: intensity > 0 ? 'rgba(168, 85, 247, 0.6)' : 'rgba(168, 85, 247, 0.3)'
