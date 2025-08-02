@@ -1,6 +1,8 @@
 # 🧠 Pamadorka - Neural Focus Interface
 
 A cyberpunk-themed Pomodoro timer application designed for enhanced productivity, focus, and mental well-being. Immerse yourself in a futuristic study environment with background music, brain-training games, and comprehensive progress tracking.
+- **Live Demo**: Visit [pamadorka.netlify.app](https://pamadorka.netlify.app/) to see the project in action.
+
 
 ## ✨ Features
 
