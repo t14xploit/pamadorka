@@ -163,19 +163,42 @@ src/
 
 ### **Netlify (Recommended)**
 1. Connect your repository to Netlify
-2. Build command: `npm run build`
-3. Publish directory: `.next`
-4. Deploy automatically on git push
+2. Build command: `npx next build && npx next export`
+3. Publish directory: `out`
+4. Environment variables: Copy from `.env.example`
+5. Deploy automatically on git push
 
 ### **Vercel**
 1. Import project to Vercel
 2. Deploy with zero configuration
-3. Automatic deployments on git push
+3. Environment variables: Set in Vercel dashboard
+4. Automatic deployments on git push
 
 ### **Self-Hosting**
-1. Run `npm run build`
-2. Serve the `.next` folder with any static hosting service
-3. Ensure proper routing for single-page application
+1. Run `npx next build`
+2. Run `npx next start` for production server
+3. Or use `npx next export` for static hosting
+4. Ensure proper routing for single-page application
+
+### **Environment Setup**
+1. Copy `.env.example` to `.env.local`
+2. Fill in your specific values (analytics, verification codes, etc.)
+3. Update `NEXT_PUBLIC_APP_URL` with your domain
+
+## 🔍 SEO & Performance
+
+### **Built-in Optimizations**
+- **Comprehensive Meta Tags**: Open Graph, Twitter Cards, structured data
+- **Progressive Web App**: Installable with offline capabilities
+- **Performance**: Optimized images, compression, caching headers
+- **Security**: CSP headers, XSS protection, frame options
+- **Accessibility**: ARIA labels, semantic HTML, keyboard navigation
+
+### **Search Engine Features**
+- **Sitemap**: Auto-generated XML sitemap
+- **Robots.txt**: Proper crawling instructions
+- **Structured Data**: Rich snippets for better search results
+- **Mobile-First**: Responsive design with mobile optimization
 
 ## 🤝 Contributing
 
